@@ -1,1 +1,1 @@
-master
+smt1.txt content is f-test
