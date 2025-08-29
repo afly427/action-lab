@@ -5,38 +5,79 @@ name: CI
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  # push:
+  #   branches: [ "main" ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      env:
+        description: 'Update selected environment'
+        required: true
+        type: choice
+        options:
+          - e1
+          - e2
+          - e3
+      ref1:
+        description: 'd1'
+        required: true
+        default: 'latest'
+
+      ref2:
+        description: 'd2'
+        required: true
+        default: 'latest2'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+      # - uses: actions/checkout@v4
+
+      # - name: Configure AWS Credentials
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     aws-region: us-east-1
+
+      # - name: sm
+      #   uses: aws-actions/aws-secretsmanager-get-secrets@v1
+      #   with:
+      #     secret-ids: |
+      #       STUDIO,${{ secrets.arn }}-envs
+      #       APP,${{ secrets.arn }}
+      #     parse-json-secrets: true
+
+      # - name: store val
+      #   run: env | grep -E '^(STUDIO_|APP_)' | sort > f2
+
+      # - run: |
+      #     MY_SECRET=????
+      #     echo "::add-mask::$MY_SECRET"
+      #     echo "MY_SECRET=$MY_SECRET" >> $GITHUB_ENV
+
+      # - run: env | sort > f2
+      # - run: diff -y --suppress-common-lines f1 f2 > f3 || true
 
       # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+      # - name: Run a one-line script
+      #   run: 'echo Hello, world! [main]'
 
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
-      
-      - name: smt1
-        run: cat smt1.txt
-
-      - name: f-test
-        run: "echo f-test branch_s action is run"
+          echo ${{ inputs.env }}
+          echo ${{ inputs.ref1 }}
+          echo ${{ inputs.ref2 }}
+      #
+      #- name: smt1
+      #  run: cat smt1.txt
+#
+      #- name: f-test
+      #  run: "echo master branch_s action is run"
