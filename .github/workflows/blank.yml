@@ -1,0 +1,33 @@
+name: Update EKS Environment
+
+on:
+  push:
+    branches: [ "main" ]
+
+  workflow_dispatch:
+
+jobs:
+  update-env:
+    runs-on: self-hosted
+    steps:
+      # - uses: actions/checkout@v4
+
+      # - name: Read secrets from AWS Secrets Manager into environment variables
+      #   uses: aws-actions/aws-secretsmanager-get-secrets@v1
+      #   with:
+      #     secret-ids: |
+      #       STUDIO,${{ secrets.arn }}-envs
+      #       APP,${{ secrets.arn }}
+      #     parse-json-secrets: true
+      
+      - name: test1
+        run: |
+          echo "abc=def" > test.env
+
+      - name: test2
+        run: |
+          set -a
+          echo "1: ${abc}"
+          source test.env
+          echo "2: ${abc}"
+
