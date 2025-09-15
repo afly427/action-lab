@@ -1,0 +1,89 @@
+name: Update EKS Environment
+
+on:
+  # push:
+  #   branches: [ "main" ]
+
+  workflow_dispatch:
+    inputs:
+      env:
+        description: 'Update selected environment'
+        required: true
+        default: 'hosted'
+        # type: choice
+        # options:
+        #   - dev
+        #   - stage
+          # - prod
+      backend_ref:
+        description: 'Tag for backend image'
+        required: true
+        default: 'latest'
+      frontend_ref:
+        description: 'Tag for frontend image'
+        required: true
+        default: 'latest'
+jobs:
+  get_input:
+    name: "Get input data"
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "noop"
+    outputs:
+      env: ${{ inputs.env }}
+      backend_ref: ${{ inputs.backend_ref }}
+      frontend_ref: ${{ inputs.frontend_ref }}
+    
+    # steps:
+    #   - id: read_input
+    #     run: |
+    #       echo "env=${{ inputs.env }}" >> $GITHUB_OUTPUT
+    #       echo "backend_ref=${{ inputs.backend_ref }}" >> $GITHUB_OUTPUT
+    #       echo "frontend_ref=${{ inputs.frontend_ref }}" >> $GITHUB_OUTPUT
+    # outputs:
+    #   env: ${{ steps.read_input.outputs.env }}
+    #   backend_ref: ${{ steps.read_input.outputs.backend_ref }}
+    #   frontend_ref: ${{ steps.read_input.outputs.frontend_ref }}
+
+
+  update-env:
+    needs: [ get_input ]
+    runs-on: "self-${{ needs.get_input.outputs.env }}"
+    steps:
+      - name: test1
+        run: |
+          echo "ENV=${{ needs.get_input.outputs.env }}" >> $GITHUB_ENV
+          echo "BACKEND_REF=${{ needs.get_input.outputs.backend_ref }}" >> $GITHUB_ENV
+          echo "FRONTEND_REF=${{ needs.get_input.outputs.frontend_ref }}" >> $GITHUB_ENV
+
+      - name: test2
+        run: |
+          echo "ENV=${{ env.ENV }}"
+          echo "BACKEND_TAG=${{ env.BACKEND_REF }}"
+          echo "FRONTEND_TAG=${{ env.FRONTEND_REF }}"
+
+      # - uses: actions/checkout@v4
+
+      # - name: Read secrets from AWS Secrets Manager into environment variables
+      #   uses: aws-actions/aws-secretsmanager-get-secrets@v1
+      #   with:
+      #     secret-ids: |
+      #       STUDIO,${{ secrets.arn }}-envs
+      #       STUDIO_PROD,${{ secrets.arn2 }}-envs
+      #       APP,${{ secrets.arn }}
+      #     parse-json-secrets: true
+
+      # - name:
+      #   run: env | sort > test.env
+      
+      # - name: test1
+      #   run: |
+      #     echo "abc=def" > test.env
+
+      # - name: test2
+      #   run: |
+      #     set -a
+      #     echo "1: ${abc}"
+      #     source test.env
+      #     echo "2: ${abc}"
+
